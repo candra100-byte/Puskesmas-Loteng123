@@ -1,0 +1,23 @@
+modules = ["nodejs-20"]
+[workflows]
+runButton = "Start Puskesmas App"
+
+[[workflows.workflow]]
+name = "Start Puskesmas App"
+author = 44068467
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm start"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+run = ["sh", "-c", "npm start"]

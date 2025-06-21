@@ -1,0 +1,15 @@
+{
+  "name": "Javascript Extension Starter",
+  "description": "A starter template for a Replit Extension with Vanilla JavaScript",
+  "tools": [
+    {
+      "name": "Example Extension",
+      "icon": "/replit.svg",
+      "handler": "/"
+    }
+  ],
+  "background": {
+    "page": "background.html"
+  },
+  "icon": "/replit.svg"
+}

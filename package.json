@@ -1,0 +1,31 @@
+{
+  "name": "puskesmas-app",
+  "version": "1.0.0",
+  "description": "Sistem Informasi Puskesmas Lombok Tengah",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx prettier --write ."
+  },
+  "keywords": [
+    "puskesmas",
+    "healthcare",
+    "web-app",
+    "healthcare",
+    "puskesmas",
+    "medical-records",
+    "patient-management",
+    "lombok-tengah",
+    "health-information-system"
+  ],
+  "author": "Puskesmas Lombok Tengah",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

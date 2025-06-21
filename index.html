@@ -1,0 +1,667 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Puskesmas Lombok Tengah</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="login-header">
+                <h2><i class="fas fa-hospital-alt"></i> Puskesmas Lombok Tengah</h2>
+                <p>Sistem Informasi Kesehatan Terpadu</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="userType">Tipe Pengguna:</label>
+                    <select id="userType" required>
+                        <option value="">Pilih Tipe Pengguna</option>
+                        <option value="pasien">Pasien</option>
+                        <option value="dokter">Dokter</option>
+                        <option value="staf">Staf</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username/NIK:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-hospital-alt"></i>
+                    <span>Puskesmas Lombok Tengah</span>
+                </div>
+                <div class="user-info">
+                    <span id="currentUser"></span>
+                    <button onclick="logout()" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="nav-menu">
+                <a href="#" onclick="showSection('dashboard')" class="nav-item active">
+                    <i class="fas fa-dashboard"></i> Dashboard
+                </a>
+                <a href="#" onclick="showSection('registration')" class="nav-item">
+                    <i class="fas fa-user-plus"></i> Pendaftaran
+                </a>
+                <a href="#" onclick="showSection('medical-records')" class="nav-item">
+                    <i class="fas fa-file-medical"></i> Rekam Medis
+                </a>
+                <a href="#" onclick="showSection('patients')" class="nav-item">
+                    <i class="fas fa-users"></i> Data Pasien
+                </a>
+                <a href="#" onclick="showSection('satisfaction')" class="nav-item">
+                    <i class="fas fa-star"></i> Kepuasan Pasien
+                </a>
+                <a href="#" onclick="showSection('reports')" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Laporan
+                </a>
+                <a href="#" onclick="showSection('immunization')" class="nav-item">
+                    <i class="fas fa-syringe"></i> Imunisasi
+                </a>
+                <a href="#" onclick="showSection('sms-gateway')" class="nav-item">
+                    <i class="fas fa-sms"></i> SMS Gateway
+                </a>
+                <a href="#" onclick="showSection('user-management')" class="nav-item">
+                    <i class="fas fa-users-cog"></i> Manajemen Pengguna
+                </a>
+                <a href="#" onclick="showSection('settings')" class="nav-item">
+                    <i class="fas fa-cog"></i> Pengaturan
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-dashboard"></i> Dashboard</h2>
+                    <div class="date-time" id="currentDateTime"></div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalPatients">0</h3>
+                            <p>Total Pasien</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="todayVisits">0</h3>
+                            <p>Kunjungan Hari Ini</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeDoctors">0</h3>
+                            <p>Dokter Aktif</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgSatisfaction">0</h3>
+                            <p>Rating Kepuasan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="activity-section">
+                    <h3>Aktivitas Terkini</h3>
+                    <div id="recentActivities" class="activity-list"></div>
+                </div>
+            </section>
+
+            <!-- Registration Section -->
+            <section id="registration" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-plus"></i> Pendaftaran Pasien</h2>
+                    <button onclick="exportData('registration')" class="btn-export">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+                
+                <form id="registrationForm" class="form-container">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="patientName">Nama Lengkap:</label>
+                            <input type="text" id="patientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientNIK">NIK:</label>
+                            <input type="text" id="patientNIK" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="patientBirth">Tanggal Lahir:</label>
+                            <input type="date" id="patientBirth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientGender">Jenis Kelamin:</label>
+                            <select id="patientGender" required>
+                                <option value="">Pilih</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientAddress">Alamat:</label>
+                        <textarea id="patientAddress" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="patientPhone">No. Telepon:</label>
+                            <input type="tel" id="patientPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="visitType">Jenis Kunjungan:</label>
+                            <select id="visitType" required>
+                                <option value="">Pilih</option>
+                                <option value="baru">Pasien Baru</option>
+                                <option value="lama">Pasien Lama</option>
+                                <option value="rujukan">Rujukan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Daftar Pasien
+                    </button>
+                </form>
+
+                <div class="registration-list">
+                    <h3>Daftar Pendaftaran Hari Ini</h3>
+                    <div id="todayRegistrations"></div>
+                </div>
+            </section>
+
+            <!-- Medical Records Section -->
+            <section id="medical-records" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-medical"></i> Rekam Medis</h2>
+                    <button onclick="exportData('medical-records')" class="btn-export">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="searchMedical" placeholder="Cari berdasarkan nama, NIK, atau nomor rekam medis...">
+                        <button onclick="searchMedicalRecords()" class="btn-search">
+                            <i class="fas fa-search"></i> Cari
+                        </button>
+                    </div>
+                </div>
+
+                <div id="searchResults" class="search-results"></div>
+
+                <div class="medical-form" id="medicalForm" style="display: none;">
+                    <h3>Form Rekam Medis</h3>
+                    <form id="medicalRecordForm">
+                        <input type="hidden" id="medicalPatientId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="medicalDate">Tanggal Pemeriksaan:</label>
+                                <input type="datetime-local" id="medicalDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="medicalDoctor">Dokter Pemeriksa:</label>
+                                <select id="medicalDoctor" required>
+                                    <option value="">Pilih Dokter</option>
+                                    <option value="dr-ahmad">Dr. Ahmad Hidayat</option>
+                                    <option value="dr-siti">Dr. Siti Nurhaliza</option>
+                                    <option value="dr-budi">Dr. Budi Santoso</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="complaints">Keluhan:</label>
+                            <textarea id="complaints" placeholder="Keluhan pasien..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="diagnosis">Diagnosis:</label>
+                            <textarea id="diagnosis" placeholder="Diagnosis dokter..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="treatment">Pengobatan/Tindakan:</label>
+                            <textarea id="treatment" placeholder="Pengobatan yang diberikan..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Catatan Tambahan:</label>
+                            <textarea id="notes" placeholder="Catatan tambahan..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> Simpan Rekam Medis
+                            </button>
+                            <button type="button" onclick="markAsCompleted()" class="btn-success">
+                                <i class="fas fa-check"></i> Selesai Diperiksa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Patients Section -->
+            <section id="patients" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Data Pasien</h2>
+                    <button onclick="exportData('patients')" class="btn-export">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+
+                <div class="patients-table">
+                    <table id="patientsTable">
+                        <thead>
+                            <tr>
+                                <th>No. RM</th>
+                                <th>Nama</th>
+                                <th>NIK</th>
+                                <th>Tgl. Lahir</th>
+                                <th>Alamat</th>
+                                <th>Telepon</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Satisfaction Section -->
+            <section id="satisfaction" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-star"></i> Kepuasan Pasien</h2>
+                    <button onclick="exportData('satisfaction')" class="btn-export">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+
+                <div class="satisfaction-stats">
+                    <div class="stat-card">
+                        <h3 id="satisfactionTotal">0</h3>
+                        <p>Total Responden</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="satisfactionAverage">0.0</h3>
+                        <p>Rating Rata-rata</p>
+                    </div>
+                </div>
+
+                <div class="satisfaction-form">
+                    <h3>Form Penilaian Kepuasan</h3>
+                    <form id="satisfactionForm">
+                        <div class="form-group">
+                            <label for="satisfactionPatient">Nama Pasien:</label>
+                            <input type="text" id="satisfactionPatient" required>
+                        </div>
+                        
+                        <div class="rating-section">
+                            <label>Penilaian Pelayanan:</label>
+                            <div class="rating-items">
+                                <div class="rating-item">
+                                    <span>Kecepatan Pelayanan:</span>
+                                    <div class="stars" data-rating="speed">
+                                        <i class="fas fa-star" data-value="1"></i>
+                                        <i class="fas fa-star" data-value="2"></i>
+                                        <i class="fas fa-star" data-value="3"></i>
+                                        <i class="fas fa-star" data-value="4"></i>
+                                        <i class="fas fa-star" data-value="5"></i>
+                                    </div>
+                                </div>
+                                <div class="rating-item">
+                                    <span>Keramahan Petugas:</span>
+                                    <div class="stars" data-rating="friendliness">
+                                        <i class="fas fa-star" data-value="1"></i>
+                                        <i class="fas fa-star" data-value="2"></i>
+                                        <i class="fas fa-star" data-value="3"></i>
+                                        <i class="fas fa-star" data-value="4"></i>
+                                        <i class="fas fa-star" data-value="5"></i>
+                                    </div>
+                                </div>
+                                <div class="rating-item">
+                                    <span>Kebersihan Fasilitas:</span>
+                                    <div class="stars" data-rating="cleanliness">
+                                        <i class="fas fa-star" data-value="1"></i>
+                                        <i class="fas fa-star" data-value="2"></i>
+                                        <i class="fas fa-star" data-value="3"></i>
+                                        <i class="fas fa-star" data-value="4"></i>
+                                        <i class="fas fa-star" data-value="5"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="satisfactionComments">Saran dan Masukan:</label>
+                            <textarea id="satisfactionComments" placeholder="Berikan saran untuk perbaikan pelayanan..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i> Kirim Penilaian
+                        </button>
+                    </form>
+                </div>
+
+                <div class="satisfaction-list">
+                    <h3>Daftar Penilaian</h3>
+                    <div id="satisfactionList"></div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Laporan</h2>
+                </div>
+
+                <div class="report-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reportType">Jenis Laporan:</label>
+                            <select id="reportType">
+                                <option value="daily">Harian</option>
+                                <option value="monthly">Bulanan</option>
+                                <option value="yearly">Tahunan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportDate">Tanggal:</label>
+                            <input type="date" id="reportDate">
+                        </div>
+                        <button onclick="generateReport()" class="btn-primary">
+                            <i class="fas fa-chart-line"></i> Generate Laporan
+                        </button>
+                    </div>
+                </div>
+
+                <div id="reportContent" class="report-content"></div>
+            </section>
+
+            <!-- Immunization Section -->
+            <section id="immunization" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-syringe"></i> Sistem Pemantauan Imunisasi</h2>
+                    <button onclick="exportData('immunization')" class="btn-export">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+
+                <div class="immunization-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-baby"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalBabies">0</h3>
+                            <p>Total Bayi</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="completedImmunization">0</h3>
+                            <p>Imunisasi Lengkap</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingImmunization">0</h3>
+                            <p>Menunggu Imunisasi</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="coveragePercentage">0%</h3>
+                            <p>Cakupan Imunisasi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="immunization-form">
+                    <h3>Pendaftaran Bayi & Jadwal Imunisasi</h3>
+                    <form id="immunizationForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="babyName">Nama Bayi:</label>
+                                <input type="text" id="babyName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="babyBirthDate">Tanggal Lahir:</label>
+                                <input type="date" id="babyBirthDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="babyGender">Jenis Kelamin:</label>
+                                <select id="babyGender" required>
+                                    <option value="">Pilih</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="babyWeight">Berat Lahir (gram):</label>
+                                <input type="number" id="babyWeight" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="parentName">Nama Orang Tua:</label>
+                                <input type="text" id="parentName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="parentPhone">No. HP Orang Tua:</label>
+                                <input type="tel" id="parentPhone" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="babyAddress">Alamat:</label>
+                            <textarea id="babyAddress" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="localWisdom">Pantangan Adat/Budaya Lokal:</label>
+                            <textarea id="localWisdom" placeholder="Contoh: Tidak boleh keluar rumah sebelum 40 hari, tradisi ngurisan, dll..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Daftar Bayi
+                        </button>
+                    </form>
+                </div>
+
+                <div class="immunization-schedule">
+                    <h3>Jadwal Imunisasi Dasar Lengkap</h3>
+                    <div id="immunizationScheduleTable"></div>
+                </div>
+
+                <div class="immunization-records">
+                    <h3>Rekam Imunisasi</h3>
+                    <div class="search-container">
+                        <input type="text" id="searchBaby" placeholder="Cari berdasarkan nama bayi atau orang tua...">
+                        <button onclick="searchBabyRecords()" class="btn-search">
+                            <i class="fas fa-search"></i> Cari
+                        </button>
+                    </div>
+                    <div id="babyRecords"></div>
+                </div>
+            </section>
+
+            <!-- SMS Gateway Section -->
+            <section id="sms-gateway" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-sms"></i> SMS Gateway & Pengingat Imunisasi</h2>
+                </div>
+
+                <div class="sms-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalSentSMS">0</h3>
+                            <p>SMS Terkirim</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingReminders">0</h3>
+                            <p>Pengingat Hari Ini</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="deliveredSMS">0</h3>
+                            <p>SMS Berhasil</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sms-configuration">
+                    <h3>Konfigurasi SMS Gateway</h3>
+                    <form id="smsConfigForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="smsApiKey">API Key SMS Gateway:</label>
+                                <input type="password" id="smsApiKey" placeholder="Masukkan API Key">
+                            </div>
+                            <div class="form-group">
+                                <label for="smsProvider">Provider SMS:</label>
+                                <select id="smsProvider">
+                                    <option value="zenziva">Zenziva</option>
+                                    <option value="textmagic">TextMagic</option>
+                                    <option value="twilio">Twilio</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Simpan Konfigurasi
+                        </button>
+                    </form>
+                </div>
+
+                <div class="sms-templates">
+                    <h3>Template SMS dengan Kearifan Lokal</h3>
+                    <div id="smsTemplates"></div>
+                </div>
+
+                <div class="manual-sms">
+                    <h3>Kirim SMS Manual</h3>
+                    <form id="manualSmsForm">
+                        <div class="form-group">
+                            <label for="recipientPhone">Nomor Tujuan:</label>
+                            <input type="tel" id="recipientPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="smsMessage">Pesan:</label>
+                            <textarea id="smsMessage" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i> Kirim SMS
+                        </button>
+                    </form>
+                </div>
+
+                <div class="sms-log">
+                    <h3>Log SMS</h3>
+                    <div id="smsLogTable"></div>
+                </div>
+            </section>
+
+            <!-- User Management Section -->
+            <section id="user-management" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users-cog"></i> Manajemen Pengguna</h2>
+                </div>
+                <div id="userManagementContent" class="user-management-content"></div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> Pengaturan</h2>
+                </div>
+
+                <div class="settings-content">
+                    <div class="setting-group">
+                        <h3>Pengaturan Umum</h3>
+                        <div class="form-group">
+                            <label for="clinicName">Nama Puskesmas:</label>
+                            <input type="text" id="clinicName" value="Puskesmas Lombok Tengah">
+                        </div>
+                        <div class="form-group">
+                            <label for="clinicAddress">Alamat:</label>
+                            <textarea id="clinicAddress">Jl. Raya Praya, Lombok Tengah, NTB</textarea>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>Backup Data</h3>
+                        <button onclick="backupData()" class="btn-secondary">
+                            <i class="fas fa-database"></i> Backup Database
+                        </button>
+                        <button onclick="restoreData()" class="btn-secondary">
+                            <i class="fas fa-upload"></i> Restore Database
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
